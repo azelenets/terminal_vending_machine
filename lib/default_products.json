@@ -1,0 +1,12 @@
+[
+  {
+    "name": "Crisps",
+    "price_cents": 500,
+    "quantity": 2
+  },
+  {
+    "name": "Chocolate",
+    "price_cents": 1500,
+    "quantity": 3
+  }
+]

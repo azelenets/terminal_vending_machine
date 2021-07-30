@@ -1,0 +1,16 @@
+#!/usr/bin/env ruby
+
+require_relative "../lib/ruby_vending_machine"
+require 'optparse'
+
+options = {
+  products_file_path: "lib/default_products.json"
+}
+
+OptionParser.new do |opts|
+  opts.on '--products-file-path [PRODUCTS_FILE_PATH]', 'Read from STDIN' do |file_path|
+    options[:products_file_path] = file_path
+  end
+end
+
+RubyVendingMachine::ApplicationRunner.call(options)
