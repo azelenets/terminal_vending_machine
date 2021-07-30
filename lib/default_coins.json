@@ -1,0 +1,26 @@
+[
+  {
+    "amount": 25,
+    "quantity": 1
+  },
+  {
+    "amount": 50,
+    "quantity": 1
+  },
+  {
+    "amount": 100,
+    "quantity": 1
+  },
+  {
+    "amount": 200,
+    "quantity": 1
+  },
+  {
+    "amount": 300,
+    "quantity": 1
+  },
+  {
+    "amount": 500,
+    "quantity": 1
+  }
+]

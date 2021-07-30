@@ -12,11 +12,13 @@ module RubyVendingMachine
   class Error < StandardError; end
 
   class ApplicationRunner
-    attr_reader :products_json
+    attr_reader :products_json, :coins_json
 
-    def initialize(products_file_path:)
+    def initialize(coins_file_path:, products_file_path:)
       products_file = File.open(products_file_path)
+      coins_file = File.open(coins_file_path)
       @products_json = ::JSON.parse(products_file.read, symbolize_names: true)
+      @coins_json = ::JSON.parse(coins_file.read, symbolize_names: true)
     end
 
     def self.call(options)
@@ -25,7 +27,8 @@ module RubyVendingMachine
 
     def call
       application = RubyVendingMachine::Application.new(
-        products: products_json
+        products: products_json,
+        coins: coins_json
       )
       application.run
     end

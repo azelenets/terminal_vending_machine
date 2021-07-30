@@ -12,7 +12,7 @@ module RubyVendingMachine
     end
 
     def to_s
-      "#{name} (#{price_cents / 100}$ x #{quantity})"
+      "#{name} (#{price_cents / 100.0}$ x #{quantity})"
     end
   end
 end
