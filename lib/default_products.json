@@ -1,12 +1,22 @@
 [
   {
     "name": "Crisps",
-    "price_cents": 500,
+    "price_cents": 75,
     "quantity": 2
   },
   {
     "name": "Chocolate",
-    "price_cents": 1500,
+    "price_cents": 150,
+    "quantity": 3
+  },
+  {
+    "name": "Water",
+    "price_cents": 75,
+    "quantity": 3
+  },
+  {
+    "name": "Coca-Cola",
+    "price_cents": 100,
     "quantity": 3
   }
 ]

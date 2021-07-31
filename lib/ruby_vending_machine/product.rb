@@ -11,6 +11,10 @@ module RubyVendingMachine
       @quantity = quantity
     end
 
+    def price_dollars
+      price_cents / 100.0
+    end
+
     def to_s
       "#{name} (#{price_cents / 100.0}$ x #{quantity})"
     end

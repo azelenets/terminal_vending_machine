@@ -10,8 +10,12 @@ module RubyVendingMachine
       @quantity = quantity
     end
 
+    def dollar_amount
+      amount / 100.0
+    end
+
     def to_s
-      "#{quantity} #{name} Coins with amount "
+      "#{quantity} x #{dollar_amount}$ #{quantity == 1 ? 'coin' : 'coins'}"
     end
   end
 end
