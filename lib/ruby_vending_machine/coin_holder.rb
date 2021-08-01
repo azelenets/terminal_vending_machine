@@ -11,69 +11,34 @@ module RubyVendingMachine
     end
 
     def dispense_change(cents:)
-      # coins = change_to_coins(change_cents: cents)
-      coins = make_change(cents)
+      coins = look_for_change(cents)
       coins.nil? ? nil : coins
     end
 
-    private
+    def receive_coins(coins_to_receive)
+      return if 0 >= coins_to_receive.sum { |coin| coin.amount * coin.quantity }
 
-    def change_to_coins(change_cents:)
-      change_coins = []
-      remaining_change = change_cents.dup
-
-      sorted_coins = coins.sort { |coin| -coin.amount }
-      sorted_coins.each_with_index do |coin, index|
-        next if coin.amount > remaining_change
-
-        coin_in_change = change_coins.find { |change_coin| change_coin.amount == coin.amount }
-        needed_quantity, remainder = remaining_change.divmod(coin.amount)
-
-        if needed_quantity > coin.quantity
-          if coin_in_change
-            coin_in_change.quantity = coin.quantity
-          else
-            coin_in_change = coin.dup
-            change_coins << coin_in_change
-          end
-
-          coin = sorted_coins[index + 1]
-          needed_quantity, remainder = remaining_change.divmod(coin.amount)
-
-          binding.pry
-
-          next if coin.amount > remaining_change || needed_quantity > coin.quantity
-
-          coin_in_change = change_coins.find { |change_coin| change_coin.amount == coin.amount }
-          needed_quantity, remainder = remaining_change.divmod(coin.amount)
-        end
-
-        if needed_quantity.positive? && coin.quantity.positive?
-          if coin_in_change
-            coin_in_change.quantity += 1
-          else
-            coin_in_change = coin.dup
-            coin_in_change.quantity = 1
-            change_coins << coin_in_change
-          end
-        end
-
-        remaining_change = remainder.round(2)
-
-        break if remaining_change.zero?
+      coins_to_receive.each do |received_coin|
+        coin = coins.find { |coin| received_coin.amount == coin.amount }
+        coin.quantity += received_coin.quantity
       end
-
-      remaining_change.zero? ? change_coins : nil
     end
 
-    def make_change(amount)
-      coins_to_release = []
+    def give_change(change_coins)
+      change = change_coins.dup
+      change_coins.each do |change_coin|
+        coin = coins.find { |coin| change_coin.amount == coin.amount }
+        coin.quantity -= change_coin.quantity
+      end
+      change.filter { |coin| coin.quantity > 0 }
+    end
 
+    def look_for_change(amount)
+      coins_to_release = []
+      started_amount = amount.dup
       coins
         .sort { |coin| -coin.amount }
         .each do |coin|
-          # next if amount.zero?
-
           needed_coins_quantity = amount / coin.amount
           release_coin = coins_to_release.find { |rc| rc.amount == coin.amount }
 
@@ -93,8 +58,10 @@ module RubyVendingMachine
           amount -= release_coin.amount * release_coin.quantity
       end
 
+      return if started_amount == amount
+
       if amount > 0
-        next_change_result = make_change(amount)
+        next_change_result = look_for_change(amount)
         next_change_result.each do |next_change_coin|
           release_coin = coins_to_release.find { |rc| rc.amount == next_change_coin.amount } || (coins_to_release << next_change_coin.dup).last
           release_coin.quantity += next_change_coin.quantity
@@ -102,10 +69,6 @@ module RubyVendingMachine
       end
 
       coins_to_release.filter! { |coin| coin.quantity > 0 }
-    end
-
-    def total_cents_amount
-      coins.sum { |coin| coin.amount * coin.quantity }
     end
 
     def to_s

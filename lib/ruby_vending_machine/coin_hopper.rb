@@ -9,7 +9,9 @@ module RubyVendingMachine
     attr_reader :coins
 
     def initialize
-      @coins = VALID_COIN_AMOUNT.map { |coin_amount| ::RubyVendingMachine::Coin.new(amount: coin_amount, quantity: 0) }
+      @coins = VALID_COIN_AMOUNT.map do |coin_amount|
+        ::RubyVendingMachine::Coin.new(amount: coin_amount, quantity: 0)
+      end
     end
 
     def insert_coin(coin)
@@ -23,11 +25,11 @@ module RubyVendingMachine
 
     def release_coins
       released_coins = inserted_coins.map { |coin| coin.dup }
-      inserted_coins.each { |coin| coin.quantity = 0 }
+      coins.each { |coin| coin.quantity = 0 }
       released_coins
     end
 
-    def total_cents
+    def inserted_cents_amount
       @coins.sum { |coin| coin.amount * coin.quantity }
     end
   end
