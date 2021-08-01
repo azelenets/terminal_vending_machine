@@ -5,13 +5,11 @@ require_relative 'coin'
 module RubyVendingMachine
   # class to describe real world CoinHopper
   class CoinHopper
-    VALID_COIN_AMOUNT = [25, 50, 100, 200, 300, 500].freeze
-
     attr_reader :coins
 
-    def initialize
-      @coins = VALID_COIN_AMOUNT.map do |coin_amount|
-        ::RubyVendingMachine::Coin.new(amount: coin_amount, quantity: 0)
+    def initialize(coins_json)
+      @coins = coins_json.map do |coin_json|
+        ::RubyVendingMachine::Coin.new(amount: coin_json[:amount], quantity: 0)
       end
     end
 

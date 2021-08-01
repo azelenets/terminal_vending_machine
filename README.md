@@ -1,17 +1,35 @@
 # Ruby Terminal Vending Machine
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/ruby_vending_machine`. To experiment with that code, run `bin/console` for an interactive prompt.
+## Initial request
 
-TODO: Delete this and the text above, and describe your gem
+Design a Vending Machine in code:
+
+
+      The Vending Machine, once a Product is selected and the appropriate amount of money is inserted, should return that Product. 
+      It should also ask for more money if there is not enough or return change if too much money is provided.
+      Change should be printed as Coin * quantity and it should return as much as possible Coins with the minimum amount.
+      Keep in mind that you need to manage the scenario where the selected Product is out of stock or the machine does not have enough change to return to the customer.
+
+      Available Coins:
+
+         - 0.25$;
+         - 0.5$; 
+         - 1$;
+         - 2$;
+         - 3$;
+         - 5$;
 
 ## Installation
 
-Download `ruby_vending_machine` ruby gem to your machine:
-/# TODO: add link to public repo
+1. Download `ruby_vending_machine` ruby gem to your machine:
 
-And then execute inside application directory:
+        https://github.com/azelenets/terminal_vending_machine
 
-    $ bin/setup
+2. Customize `Products` and `Coins` changing content in the `lib/data/*.json` files.
+
+3. Setup application:
+
+        $ bin/setup
 
 ## Usage
 

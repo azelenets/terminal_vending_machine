@@ -9,15 +9,15 @@ require_relative '../models/coin_hopper'
 module RubyVendingMachine
   # class to describe Vending Machine terminal ruby application
   class Application
-    attr_reader :products, :coin_hopper, :coin_holder, :selected_product
+    attr_reader :stock, :coin_hopper, :coin_holder, :selected_product
 
     def initialize(products:, coins:)
-      @products = products.map do |product_attrs|
+      @stock = products.map do |product_attrs|
         ::RubyVendingMachine::Product.new(product_attrs)
       end
       @selected_product = nil
-      @coin_hopper = ::RubyVendingMachine::CoinHopper.new
       @coin_holder = ::RubyVendingMachine::CoinHolder.new(coins)
+      @coin_hopper = ::RubyVendingMachine::CoinHopper.new(coins)
     end
 
     def insert_coin(coin)
@@ -38,7 +38,10 @@ module RubyVendingMachine
         coin_holder.receive_coins(released_coins)
         product = dispense_selected_product
 
-        return { message: :success, data: { product: product } }
+        return {
+          message: :success,
+          data: Hash[product: product, received_coins: released_coins]
+        }
       end
 
       change_in_coins = coin_holder.look_for_change(overpayment)
@@ -49,21 +52,29 @@ module RubyVendingMachine
 
       released_coins = coin_hopper.release_coins
       coin_holder.receive_coins(released_coins)
-      change_coins = coin_holder.give_change(change_in_coins)
       product = dispense_selected_product
+      change_coins = coin_holder.give_change(change_in_coins)
 
       return { message: :error, data: 'Unhandled exception' } unless product
-      return { message: :success, data: { product: product } } if change_coins.empty?
+
+      if change_coins.empty?
+        return {
+          message: :success,
+          data: Hash[product: product, received_coins: released_coins]
+        }
+      end
 
       {
         message: :success,
-        data: Hash[product: product, change_coins: change_coins]
+        data: Hash[product: product,
+                   change_coins: change_coins,
+                   received_coins: released_coins]
       }
     end
 
     private
 
-    attr_writer :products, :coin_hopper, :coin_holder, :selected_product
+    attr_writer :stock, :coin_hopper, :coin_holder, :selected_product
 
     def dispense_selected_product
       return if selected_product.nil?

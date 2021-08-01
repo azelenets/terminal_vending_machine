@@ -12,7 +12,7 @@ module RubyVendingMachine
 
     def self.run(application)
       application_window = new(application)
-      application_window.display_products_table(application.products)
+      application_window.display_products_table(application.stock)
 
       until @application_exit
         @application_exit = application_window.show_main_menu
@@ -23,11 +23,11 @@ module RubyVendingMachine
       menu_actions = [
         Hash[name: 'Show Products',
              handler: lambda do
-               display_products_table(application.products)
+               display_products_table(application.stock)
                show_main_menu
              end],
         Hash[name: 'Buy Product',
-             handler: -> { show_select_product_menu(application.products) }],
+             handler: -> { show_select_product_menu(application.stock) }],
         Hash[name: 'Show CoinsHolder (debug mode)',
              handler: lambda do
                terminal_writer.display_table(
@@ -62,7 +62,7 @@ module RubyVendingMachine
         name: 'Back',
         handler: lambda do
           application.coin_hopper.inserted_coins.sum(&:quantity).zero? &&
-            show_select_product_menu(application.products)
+            show_select_product_menu(application.stock)
 
           terminal_writer.display_yesno_menu(
             'Are you sure? It will cause inserted coins release.'.red,
@@ -83,9 +83,7 @@ module RubyVendingMachine
         end
       }
 
-      inserted_coins = application.coin_hopper.inserted_coins.map do |coin|
-        "#{coin.quantity} x #{coin.dollar_amount}$"
-      end.join("\n")
+      inserted_coins = display_coins_amount(application.coin_hopper.inserted_coins)
       terminal_writer.display_select_menu(
         "Please insert coins into coins hopper.\n"\
         "Coins inserted:\n#{inserted_coins}",
@@ -106,30 +104,30 @@ module RubyVendingMachine
 
         terminal_writer.display_box(
           :info,
-          "Please add #{residual_payment_amount.abs / 100.0}$ using coins:\n" +
-          CoinHopper::VALID_COIN_AMOUNT.map { |coin_amount| "  - #{coin_amount / 100.0}$" }.join("\n") +
+          "Please add #{residual_payment_amount.abs / 100.0}$"\
           "\nYour current balance: #{application.coin_hopper.inserted_cents_amount / 100.0}$",
           Hash[title: { top_left: ' ✔ BALANCE: ' }]
         )
         show_insert_coins_menu
       when :success
-        product = seller_response.dig(:data, :product)
+        product = seller_response.fetch(:data).fetch(:product)
+        received_coins = seller_response.fetch(:data).fetch(:received_coins)
         change_coins = seller_response.dig(:data, :change_coins)
 
-        message = ''
-        message += "1 x #{product.name} (#{product.price_dollars}$)" if product
+        message = "Received: #{received_coins.sum { |received_coin| received_coin.dollar_amount * received_coin.quantity }}$\n" +
+          display_coins_amount(received_coins) +
+          "\nProduct: #{product.name}: #{product.price_dollars}$"
+
         unless change_coins.nil?
-          change_amount = change_coins.sum { |change_coin| change_coin.amount / 100.0 }
-          message += "\nDon't forget to take #{change_amount}$:\n" +
-                     change_coins.map do |change_coin|
-                       "  - #{change_coin.quantity} x #{change_coin.amount / 100.0}$"
-                     end.join("\n")
+          change_amount = change_coins.sum { |received_coin| received_coin.dollar_amount * received_coin.quantity }
+          message += "\nChange: #{change_amount}$\n" +
+            display_coins_amount(change_coins)
         end
 
         terminal_writer.display_box(
           :success,
           message,
-          Hash[title: { top_left: ' ✔ PURCHASED ' }]
+          Hash[title: { top_left: ' ✔ PURCHASE RECEIPT ' }]
         )
         show_main_menu
       when :no_change
@@ -163,7 +161,7 @@ module RubyVendingMachine
                 "#{product.name} out of stock",
                 Hash[title: { top_left: ' ✘ OUT OF STOCK ' }]
               )
-              show_select_product_menu(application.products)
+              show_select_product_menu(application.stock)
             end
 
             application.select_product_to_buy(product)
@@ -179,5 +177,9 @@ module RubyVendingMachine
     private
 
     attr_reader :application, :terminal_writer
+
+    def display_coins_amount(coins)
+      coins.map { |coin| "  - #{coin.quantity} x #{coin.dollar_amount}$" }.join("\n")
+    end
   end
 end
