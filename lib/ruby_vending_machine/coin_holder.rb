@@ -62,6 +62,8 @@ module RubyVendingMachine
 
       if amount > 0
         next_change_result = look_for_change(amount)
+        return [] if next_change_result.nil?
+
         next_change_result.each do |next_change_coin|
           release_coin = coins_to_release.find { |rc| rc.amount == next_change_coin.amount } || (coins_to_release << next_change_coin.dup).last
           release_coin.quantity += next_change_coin.quantity

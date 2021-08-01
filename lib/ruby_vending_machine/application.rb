@@ -9,10 +9,7 @@ require_relative 'coin_hopper'
 
 module RubyVendingMachine
   class Application
-    # TODO: hide initialized_attributes into "private" scope
-    # and make available only methods() that uses this attrs
-    attr_accessor :products, :selected_product,
-                  :coin_hopper, :coin_holder
+    attr_reader :products, :coin_hopper, :coin_holder, :selected_product
 
     def initialize(products:, coins:)
       @products = products.map do |product_attrs|
@@ -23,32 +20,13 @@ module RubyVendingMachine
       @coin_holder = ::RubyVendingMachine::CoinHolder.new(coins)
     end
 
-    def run
-      application_window = ApplicationWindow.new(self)
-      application_window.display_products_table(products)
-
-      until @application_exit do
-        @application_exit = application_window.show_main_menu
-      end
+    def insert_coin(coin)
+      coin_hopper.insert_coin(coin)
+      sell_selected_product
     end
 
     def select_product_to_buy(product)
       self.selected_product = product
-    end
-
-    def dispense_selected_product
-      return if self.selected_product.nil?
-
-      product = self.selected_product.dup
-      self.selected_product.quantity -= 1
-      self.selected_product = nil
-      product
-    end
-
-    def calculate_change
-      return if selected_product.nil?
-
-      coin_hopper.inserted_cents_amount - selected_product.price_cents
     end
 
     def sell_selected_product
@@ -80,6 +58,25 @@ module RubyVendingMachine
         message: :success,
         data: Hash[product: product, change_coins: change_coins]
       }
+    end
+
+    private
+
+    attr_writer :products, :coin_hopper, :coin_holder, :selected_product
+
+    def dispense_selected_product
+      return if self.selected_product.nil?
+
+      product = self.selected_product.dup
+      self.selected_product.quantity -= 1
+      self.selected_product = nil
+      product
+    end
+
+    def calculate_change
+      return if selected_product.nil?
+
+      coin_hopper.inserted_cents_amount - selected_product.price_cents
     end
   end
 end

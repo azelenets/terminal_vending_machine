@@ -3,14 +3,10 @@
 require 'json'
 require 'tty-prompt'
 require 'colorize'
-require 'figlet'
-require 'lolcat'
 require_relative 'ruby_vending_machine/version'
 require_relative 'ruby_vending_machine/application'
 
 module RubyVendingMachine
-  class Error < StandardError; end
-
   class ApplicationRunner
     attr_reader :products_json, :coins_json
 
@@ -30,7 +26,7 @@ module RubyVendingMachine
         products: products_json,
         coins: coins_json
       )
-      application.run
+      RubyVendingMachine::ApplicationWindow.run(application)
     end
   end
 end

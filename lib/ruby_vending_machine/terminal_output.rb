@@ -36,7 +36,6 @@ module RubyVendingMachine
     end
 
     def display_table(title:, headings:, rows:)
-      system 'clear'
       table = Terminal::Table.new(
         title: title,
         headings: headings,
