@@ -3,8 +3,8 @@
 require 'json'
 require 'tty-prompt'
 require 'colorize'
-require_relative 'ruby_vending_machine/version'
-require_relative 'ruby_vending_machine/application'
+require_relative 'app/version'
+require_relative 'app/application'
 
 module RubyVendingMachine
   # class to describe Vending Machine terminal ruby application runner

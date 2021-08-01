@@ -2,9 +2,9 @@
 
 require 'pry'
 require_relative 'application_window'
-require_relative 'product'
-require_relative 'coin_holder'
-require_relative 'coin_hopper'
+require_relative '../models/product'
+require_relative '../models/coin_holder'
+require_relative '../models/coin_hopper'
 
 module RubyVendingMachine
   # class to describe Vending Machine terminal ruby application

@@ -4,8 +4,8 @@ require_relative "../lib/ruby_vending_machine"
 require 'optparse'
 
 options = {
-  products_file_path: "lib/default_products.json",
-  coins_file_path: "lib/default_coins.json"
+  products_file_path: "lib/data/default_products.json",
+  coins_file_path: "lib/data/default_coins.json"
 }
 
 OptionParser.new do |opts|
