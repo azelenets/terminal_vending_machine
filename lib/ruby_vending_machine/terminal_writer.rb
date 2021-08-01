@@ -5,7 +5,7 @@ require 'tty-box'
 require 'tty-prompt'
 
 module RubyVendingMachine
-  class TerminalOutput
+  class TerminalWriter
     def initialize
       @terminal_prompt = TTY::Prompt.new
     end
