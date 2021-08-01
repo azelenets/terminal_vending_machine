@@ -7,6 +7,7 @@ require_relative 'ruby_vending_machine/version'
 require_relative 'ruby_vending_machine/application'
 
 module RubyVendingMachine
+  # class to describe Vending Machine terminal ruby application runner
   class ApplicationRunner
     attr_reader :products_json, :coins_json
 

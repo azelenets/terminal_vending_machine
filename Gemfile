@@ -2,12 +2,15 @@
 
 source 'https://rubygems.org'
 
-gem 'tty-prompt'
-gem 'terminal-table'
+ruby '2.6.6'
+
 gem 'colorize'
+gem 'terminal-table'
 gem 'tty-box'
+gem 'tty-prompt'
 
 group :test, :development do
+  gem 'rubocop'
   gem 'rspec', '~> 3.0'
   gem 'pry'
 end

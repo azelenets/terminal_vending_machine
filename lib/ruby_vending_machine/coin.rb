@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module RubyVendingMachine
+  # class to describe real world Coin
   class Coin
     attr_reader :amount
     attr_accessor :quantity

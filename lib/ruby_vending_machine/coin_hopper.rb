@@ -3,6 +3,7 @@
 require_relative 'coin'
 
 module RubyVendingMachine
+  # class to describe real world CoinHopper
   class CoinHopper
     VALID_COIN_AMOUNT = [25, 50, 100, 200, 300, 500].freeze
 
@@ -20,11 +21,11 @@ module RubyVendingMachine
     end
 
     def inserted_coins
-      @coins.select { |coin| coin.quantity > 0 }
+      @coins.select { |coin| coin.quantity.positive? }
     end
 
     def release_coins
-      released_coins = inserted_coins.map { |coin| coin.dup }
+      released_coins = inserted_coins.map(&:dup)
       coins.each { |coin| coin.quantity = 0 }
       released_coins
     end

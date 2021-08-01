@@ -5,6 +5,7 @@ require 'tty-box'
 require 'tty-prompt'
 
 module RubyVendingMachine
+  # class to write messages in terminal
   class TerminalWriter
     def initialize
       @terminal_prompt = TTY::Prompt.new
@@ -41,7 +42,7 @@ module RubyVendingMachine
         headings: headings,
         rows: rows
       )
-      puts "#{table.to_s}\n".green
+      puts "#{table}\n".green
     end
 
     private

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module RubyVendingMachine
+  # class to describe real world Product
   class Product
     attr_reader :name, :price_cents
     attr_accessor :quantity

@@ -3,6 +3,7 @@
 require_relative 'terminal_writer'
 
 module RubyVendingMachine
+  # class to describe Application Window in Terminal
   class ApplicationWindow
     def initialize(application)
       @application = application
@@ -13,7 +14,7 @@ module RubyVendingMachine
       application_window = new(application)
       application_window.display_products_table(application.products)
 
-      until @application_exit do
+      until @application_exit
         @application_exit = application_window.show_main_menu
       end
     end
@@ -21,14 +22,14 @@ module RubyVendingMachine
     def show_main_menu
       menu_actions = [
         Hash[name: 'Show Products',
-             handler: -> do
+             handler: lambda do
                display_products_table(application.products)
                show_main_menu
              end],
         Hash[name: 'Buy Product',
              handler: -> { show_select_product_menu(application.products) }],
         Hash[name: 'Show CoinsHolder (debug mode)',
-             handler: -> do
+             handler: lambda do
                terminal_writer.display_table(
                  title: 'COINS HOLDER',
                  headings: ['Amount, $', 'Quantity'],
@@ -58,22 +59,21 @@ module RubyVendingMachine
              handler: -> { handle_insert_coin(coin) }]
       end
       prompt_options << {
-        name: "Back",
-        handler: -> do
-          if application.coin_hopper.inserted_coins.sum(&:quantity) == 0
+        name: 'Back',
+        handler: lambda do
+          application.coin_hopper.inserted_coins.sum(&:quantity).zero? &&
             show_select_product_menu(application.products)
-          end
 
           terminal_writer.display_yesno_menu(
             'Are you sure? It will cause inserted coins release.'.red,
-            -> do
+            lambda do
               application.select_product_to_buy(nil)
               released_coins = application.coin_hopper.release_coins
-              if released_coins.sum(&:quantity) > 0
+              if released_coins.sum(&:quantity).positive?
                 terminal_writer.display_box(
                   :warn,
-                  "Take back your #{released_coins.map(&:to_s).join(", ")}",
-                  Hash[title: { top_left: " ✔ RELEASED " }]
+                  "Take back your #{released_coins.map(&:to_s).join(', ')}",
+                  Hash[title: { top_left: ' ✔ RELEASED ' }]
                 )
               end
               show_main_menu
@@ -97,11 +97,11 @@ module RubyVendingMachine
       terminal_writer.display_box(
         :info,
         "1 x #{coin.dollar_amount}$ received",
-        Hash[title: { top_left: " ✔ COINS RECEIVED: " }]
+        Hash[title: { top_left: ' ✔ COINS RECEIVED: ' }]
       )
       seller_response = application.insert_coin(coin)
       case seller_response[:message]
-      when :large_mount_needed then
+      when :large_mount_needed
         residual_payment_amount = seller_response.dig(:data, :amount)
 
         terminal_writer.display_box(
@@ -116,33 +116,35 @@ module RubyVendingMachine
         product = seller_response.dig(:data, :product)
         change_coins = seller_response.dig(:data, :change_coins)
 
-        message = ""
+        message = ''
         message += "1 x #{product.name} (#{product.price_dollars}$)" if product
         unless change_coins.nil?
           change_amount = change_coins.sum { |change_coin| change_coin.amount / 100.0 }
           message += "\nDon't forget to take #{change_amount}$:\n" +
-            change_coins.map { |change_coin| "  - #{change_coin.quantity} x #{change_coin.amount / 100.0}$" }.join("\n")
+                     change_coins.map do |change_coin|
+                       "  - #{change_coin.quantity} x #{change_coin.amount / 100.0}$"
+                     end.join("\n")
         end
 
         terminal_writer.display_box(
           :success,
           message,
-          Hash[title: { top_left: " ✔ PURCHASED " }]
+          Hash[title: { top_left: ' ✔ PURCHASED ' }]
         )
         show_main_menu
       when :no_change
         released_coins = seller_response.dig(:data, :released_coins)
         terminal_writer.display_box(
           :error,
-          "Sorry, but no change.\nTake back your #{released_coins.map(&:to_s).join(", ")}",
-          Hash[title: { top_left: " ✘ NO CHANGE | RELEASED " }]
+          "Sorry, but no change.\nTake back your #{released_coins.map(&:to_s).join(', ')}",
+          Hash[title: { top_left: ' ✘ NO CHANGE | RELEASED ' }]
         )
         show_main_menu
       else
         terminal_writer.display_box(
           :error,
           seller_response[:data],
-          Hash[title: { top_left: " ✘ ERROR " }]
+          Hash[title: { top_left: ' ✘ ERROR ' }]
         )
         show_main_menu
       end
@@ -152,14 +154,14 @@ module RubyVendingMachine
       prompt_options = products.map.with_index do |product, index|
         {
           name: "#{index + 1}. Buy #{product.name} - #{product.price_dollars}$"
-                  .send(product.quantity.zero? ? :red : :green),
-          handler: -> do
+            .send(product.quantity.zero? ? :red : :green),
+          handler: lambda do
             if product.quantity.zero?
               application.select_product_to_buy(nil)
               terminal_writer.display_box(
                 :error,
                 "#{product.name} out of stock",
-                Hash[title: { top_left: " ✘ OUT OF STOCK " }]
+                Hash[title: { top_left: ' ✘ OUT OF STOCK ' }]
               )
               show_select_product_menu(application.products)
             end

@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-
 require 'pry'
 require_relative 'application_window'
 require_relative 'product'
@@ -8,6 +7,7 @@ require_relative 'coin_holder'
 require_relative 'coin_hopper'
 
 module RubyVendingMachine
+  # class to describe Vending Machine terminal ruby application
   class Application
     attr_reader :products, :coin_hopper, :coin_holder, :selected_product
 
@@ -31,7 +31,7 @@ module RubyVendingMachine
 
     def sell_selected_product
       overpayment = calculate_change
-      return { message: :large_mount_needed, data: { amount: overpayment } } if overpayment < 0
+      return { message: :large_mount_needed, data: { amount: overpayment } } if overpayment.negative?
 
       if overpayment.zero?
         released_coins = coin_hopper.release_coins
@@ -53,7 +53,8 @@ module RubyVendingMachine
       product = dispense_selected_product
 
       return { message: :error, data: 'Unhandled exception' } unless product
-      return { message: :success, data: { product: product } } if change_coins.size == 0
+      return { message: :success, data: { product: product } } if change_coins.empty?
+
       {
         message: :success,
         data: Hash[product: product, change_coins: change_coins]
@@ -65,10 +66,10 @@ module RubyVendingMachine
     attr_writer :products, :coin_hopper, :coin_holder, :selected_product
 
     def dispense_selected_product
-      return if self.selected_product.nil?
+      return if selected_product.nil?
 
-      product = self.selected_product.dup
-      self.selected_product.quantity -= 1
+      product = selected_product.dup
+      selected_product.quantity -= 1
       self.selected_product = nil
       product
     end
