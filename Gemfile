@@ -10,6 +10,7 @@ gem 'tty-box'
 gem 'tty-prompt'
 
 group :test, :development do
+  gem 'factory_bot'
   gem 'rubocop'
   gem 'rspec', '~> 3.0'
   gem 'pry'

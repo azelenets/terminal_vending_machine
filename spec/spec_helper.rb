@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'ruby_vending_machine'
+require_relative 'support/factory_bot'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
