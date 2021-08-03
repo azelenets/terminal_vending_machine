@@ -18,5 +18,9 @@ module RubyVendingMachine
     def to_s
       "#{quantity} x #{dollar_amount}$ #{quantity == 1 ? 'coin' : 'coins'}"
     end
+
+    def as_json
+      { amount: amount, quantity: quantity }
+    end
   end
 end

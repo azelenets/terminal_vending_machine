@@ -11,11 +11,6 @@ module RubyVendingMachine
       @coins = coins.map { |coin_json| ::RubyVendingMachine::Coin.new(coin_json) }
     end
 
-    def dispense_change(cents:)
-      coins = look_for_change(cents)
-      coins.nil? ? nil : coins
-    end
-
     def receive_coins(coins_to_receive)
       return if coins_to_receive.sum { |coin| coin.amount * coin.quantity } <= 0
 
@@ -71,7 +66,7 @@ module RubyVendingMachine
     end
 
     def to_s
-      coins.map { |coin| "#{coin.quantity} Coins with amount #{coin.amount}" }.join("\n")
+      coins.map(&:to_s).join("\n")
     end
   end
 end

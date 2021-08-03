@@ -31,5 +31,11 @@ module RubyVendingMachine
     def inserted_cents_amount
       @coins.sum { |coin| coin.amount * coin.quantity }
     end
+
+    def as_json
+      {
+        coins: coins.map(&:as_json)
+      }
+    end
   end
 end
